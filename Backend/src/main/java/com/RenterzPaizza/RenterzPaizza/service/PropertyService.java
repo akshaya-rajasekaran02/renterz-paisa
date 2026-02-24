@@ -3,16 +3,24 @@ package com.RenterzPaizza.RenterzPaizza.service;
 import com.RenterzPaizza.RenterzPaizza.dto.PropertyRequest;
 import com.RenterzPaizza.RenterzPaizza.dto.PropertyResponse;
 import com.RenterzPaizza.RenterzPaizza.entity.Property;
+import com.RenterzPaizza.RenterzPaizza.entity.Unit;
 import com.RenterzPaizza.RenterzPaizza.entity.User;
 import com.RenterzPaizza.RenterzPaizza.entity.enums.EntityStatus;
+import com.RenterzPaizza.RenterzPaizza.entity.enums.UnitStatus;
+import com.RenterzPaizza.RenterzPaizza.entity.enums.UnitType;
 import com.RenterzPaizza.RenterzPaizza.exception.NotFoundException;
 import com.RenterzPaizza.RenterzPaizza.mapper.PropertyMapper;
 import com.RenterzPaizza.RenterzPaizza.repository.PropertyRepository;
+import com.RenterzPaizza.RenterzPaizza.repository.UnitRepository;
 import com.RenterzPaizza.RenterzPaizza.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class PropertyService {
@@ -20,13 +28,16 @@ public class PropertyService {
     private final PropertyRepository propertyRepository;
     private final PropertyMapper propertyMapper;
     private final UserRepository userRepository;
+    private final UnitRepository unitRepository;
 
     public PropertyService(PropertyRepository propertyRepository,
             PropertyMapper propertyMapper,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            UnitRepository unitRepository) {
         this.propertyRepository = propertyRepository;
         this.propertyMapper = propertyMapper;
         this.userRepository = userRepository;
+        this.unitRepository = unitRepository;
     }
 
     @Transactional
@@ -35,6 +46,26 @@ public class PropertyService {
                 .orElseThrow(() -> new NotFoundException("Admin not found"));
 
         Property saved = propertyRepository.save(propertyMapper.toEntity(request, admin));
+
+        // Create units automatically based on the units count
+        int unitCount = request.getUnits() != null ? request.getUnits() : 0;
+        if (unitCount > 0) {
+            List<Unit> units = new ArrayList<>();
+            for (int i = 1; i <= unitCount; i++) {
+                Unit unit = Unit.builder()
+                        .unitNumber(String.valueOf(100 + i))
+                        .unitType(UnitType.FLAT)
+                        .floor(1)
+                        .monthlyRent(BigDecimal.ZERO)
+                        .property(saved)
+                        .owner(admin)
+                        .status(UnitStatus.AVAILABLE)
+                        .build();
+                units.add(unit);
+            }
+            unitRepository.saveAll(units);
+        }
+
         return propertyMapper.toResponse(saved);
     }
 
