@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import BarChart from '../../components/charts/BarChart'
+import LineChart from '../../components/charts/LineChart'
 import Button from '../../components/ui/Button'
 import { ROLES } from '../../constants/roles'
 import { useAuth } from '../../hooks/useAuth'
@@ -132,10 +132,10 @@ export default function RentPage() {
       const tenantAssignees = tenantProfiles.length
         ? tenantProfiles
         : unit.tenantProfile
-        ? [unit.tenantProfile]
-        : unit.tenant
-        ? [{ fullName: unit.tenant, email: '' }]
-        : []
+          ? [unit.tenantProfile]
+          : unit.tenant
+            ? [{ fullName: unit.tenant, email: '' }]
+            : []
       const ownerAssignees = !tenantAssignees.length && unit.owner
         ? [{ fullName: `${unit.owner} (Owner)`, email: unit.ownerProfile?.email || '' }]
         : []
@@ -366,7 +366,7 @@ export default function RentPage() {
               </Card>
             ) : null}
             <Table columns={columns} data={isTenant ? tenantRents : adminRents} emptyText={isTenant ? 'No rent records for your account.' : 'No records found'} />
-            {!isTenant ? <BarChart data={chartData} /> : null}
+            {!isTenant ? <LineChart data={chartData} /> : null}
           </>
         )
       )}
