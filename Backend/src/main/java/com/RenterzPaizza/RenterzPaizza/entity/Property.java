@@ -40,4 +40,8 @@ public class Property extends AuditableSoftDeleteEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", nullable = false)
     private User admin;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer units = 0;
 }

@@ -20,4 +20,7 @@ public class PropertyRequest {
 
     @NotBlank(message = "City is required")
     private String city;
+
+    @NotNull(message = "Number of units is required")
+    private Integer units;
 }

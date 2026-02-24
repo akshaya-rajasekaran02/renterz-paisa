@@ -18,6 +18,7 @@ public class PropertyResponse {
     private String city;
     private EntityStatus status;
     private Long adminId;
+    private Integer units;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

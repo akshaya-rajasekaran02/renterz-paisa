@@ -15,6 +15,7 @@ public class PropertyMapper {
                 .propertyType(request.getPropertyType())
                 .address(request.getAddress())
                 .city(request.getCity())
+                .units(request.getUnits() != null ? request.getUnits() : 0)
                 .admin(admin)
                 .build();
     }
@@ -28,6 +29,7 @@ public class PropertyMapper {
                 .city(property.getCity())
                 .status(property.getStatus())
                 .adminId(property.getAdmin().getUserId())
+                .units(property.getUnits() != null ? property.getUnits() : 0)
                 .createdAt(property.getCreatedAt())
                 .updatedAt(property.getUpdatedAt())
                 .build();

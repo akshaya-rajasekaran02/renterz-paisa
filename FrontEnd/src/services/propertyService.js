@@ -66,6 +66,7 @@ export const propertyService = {
       propertyType: toBackendPropertyType(payload.type),
       city: String(payload.city || '').trim(),
       address: String(payload.address || payload.city || '').trim(),
+      units: Number(payload.units) || 0,
     }
     const { data } = await api.post('/api/admin/properties', request, {
       params: { adminId },
@@ -82,6 +83,7 @@ export const propertyService = {
       propertyType: toBackendPropertyType(payload.type),
       city: String(payload.city || '').trim(),
       address: String(payload.address || payload.city || '').trim(),
+      units: Number(payload.units) || 0,
     }
     const { data } = await api.put(`/api/admin/properties/${id}`, request)
     return toFrontendProperty(data)

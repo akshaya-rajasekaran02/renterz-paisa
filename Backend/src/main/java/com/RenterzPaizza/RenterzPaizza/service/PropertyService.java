@@ -22,8 +22,8 @@ public class PropertyService {
     private final UserRepository userRepository;
 
     public PropertyService(PropertyRepository propertyRepository,
-                           PropertyMapper propertyMapper,
-                           UserRepository userRepository) {
+            PropertyMapper propertyMapper,
+            UserRepository userRepository) {
         this.propertyRepository = propertyRepository;
         this.propertyMapper = propertyMapper;
         this.userRepository = userRepository;
@@ -61,6 +61,7 @@ public class PropertyService {
         property.setPropertyType(request.getPropertyType());
         property.setAddress(request.getAddress());
         property.setCity(request.getCity());
+        property.setUnits(request.getUnits() != null ? request.getUnits() : 0);
         return propertyMapper.toResponse(propertyRepository.save(property));
     }
 
