@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { History } from 'lucide-react'
 import { usePageLoading } from '../../hooks/usePageLoading'
@@ -69,6 +69,18 @@ export default function UnitPage() {
   const properties = useMemo(() => inventoryService.getProperties(), [])
   const propertyById = useMemo(() => new Map(properties.map((item) => [Number(item.id), item])), [properties])
   const [sharingDraftByUnit, setSharingDraftByUnit] = useState({})
+
+  // Sync units from backend on mount
+  useEffect(() => {
+    const sync = async () => {
+      // First sync properties from backend so units can be linked
+      await inventoryService.syncPropertiesFromBackend()
+      // Then sync units
+      const units = await inventoryService.syncUnitsFromBackend()
+      setUnits(units)
+    }
+    sync()
+  }, [])
 
   const targetUnit = useMemo(() => units.find((item) => item.id === allocatingId) || null, [units, allocatingId])
   const managingUnit = useMemo(() => units.find((item) => item.id === tenantManageUnit) || null, [tenantManageUnit, units])

@@ -87,7 +87,7 @@ export const presenceService = {
 
   countOnlineUsers() {
     const cleaned = prune(readPresence())
-    writePresence(cleaned)
+    // Don't call writePresence here - it triggers infinite loop!
     const unique = new Set(
       Object.values(cleaned)
         .map((entry) => entry?.userId || entry?.email)

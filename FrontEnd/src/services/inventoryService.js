@@ -1,5 +1,6 @@
 import { PROPERTIES_KEY, UNITS_KEY, UNIT_AUDIT_KEY } from '../constants/app'
 import { propertiesSeed, unitsSeed } from './mockData'
+import { propertyService } from './propertyService'
 import { userService } from './userService'
 
 function readCollection(key, seed) {
@@ -78,8 +79,8 @@ function withSeedLinks(properties, units) {
     const tenantProfiles = Array.isArray(unit.tenantProfiles)
       ? unit.tenantProfiles
       : unit.tenantProfile
-      ? [unit.tenantProfile]
-      : []
+        ? [unit.tenantProfile]
+        : []
     const sharingCapacity = Number(unit.sharingCapacity) > 0
       ? Number(unit.sharingCapacity)
       : (isPg ? 3 : 1)
@@ -140,12 +141,49 @@ export const inventoryService = {
     return cleanedProperties
   },
 
+  async syncPropertiesFromBackend() {
+    try {
+      const backendProperties = await propertyService.listProperties()
+      if (backendProperties && backendProperties.length > 0) {
+        const cleaned = backendProperties.map((item) => ({
+          ...item,
+          units: item.units || 0,
+        }))
+        writeCollection(PROPERTIES_KEY, cleaned)
+        return cleaned
+      }
+    } catch {
+      // Fall back to local storage
+    }
+    return this.getProperties()
+  },
+
   getUnits() {
     const properties = this.getProperties()
     const units = readCollection(UNITS_KEY, unitsSeed)
     const linked = withSeedLinks(properties, units)
     writeCollection(UNITS_KEY, linked)
     return linked
+  },
+
+  async syncUnitsFromBackend() {
+    try {
+      const backendUnits = await propertyService.getAllUnits()
+      console.log('Backend units fetched:', backendUnits)
+      if (backendUnits && backendUnits.length > 0) {
+        const properties = this.getProperties()
+        console.log('Local properties:', properties)
+        const linked = withSeedLinks(properties, backendUnits)
+        console.log('Linked units:', linked)
+        writeCollection(UNITS_KEY, linked)
+        return linked
+      }
+      console.log('No backend units found')
+    } catch (error) {
+      console.error('Error syncing units from backend:', error)
+      // Fall back to local storage
+    }
+    return this.getUnits()
   },
 
   saveProperty(formState, editingId = null) {
@@ -217,15 +255,15 @@ export const inventoryService = {
     const assignee = typeof assigneeInput === 'string'
       ? { fullName: String(assigneeInput || '').trim() }
       : {
-          fullName: String(assigneeInput?.fullName || '').trim(),
-          email: String(assigneeInput?.email || '').trim().toLowerCase(),
-          age: Number(assigneeInput?.age) || null,
-          mobile: String(assigneeInput?.mobile || '').trim(),
-          documentType: String(assigneeInput?.documentType || '').trim(),
-          documentNumber: String(assigneeInput?.documentNumber || '').trim(),
-          photo: assigneeInput?.photo || '',
-          documentFile: assigneeInput?.documentFile || '',
-        }
+        fullName: String(assigneeInput?.fullName || '').trim(),
+        email: String(assigneeInput?.email || '').trim().toLowerCase(),
+        age: Number(assigneeInput?.age) || null,
+        mobile: String(assigneeInput?.mobile || '').trim(),
+        documentType: String(assigneeInput?.documentType || '').trim(),
+        documentNumber: String(assigneeInput?.documentNumber || '').trim(),
+        photo: assigneeInput?.photo || '',
+        documentFile: assigneeInput?.documentFile || '',
+      }
     const nextUnits = units.map((unit) => {
       if (unit.id !== unitId) return unit
       const isPgUnit = String(unit.propertyType || '').toUpperCase() === 'PG'
@@ -234,8 +272,8 @@ export const inventoryService = {
           const existingProfiles = Array.isArray(unit.tenantProfiles)
             ? unit.tenantProfiles
             : unit.tenantProfile
-            ? [unit.tenantProfile]
-            : []
+              ? [unit.tenantProfile]
+              : []
           const sharingCapacity = Math.max(
             1,
             Number(assigneeInput?.sharingCapacity) || Number(unit.sharingCapacity) || 3

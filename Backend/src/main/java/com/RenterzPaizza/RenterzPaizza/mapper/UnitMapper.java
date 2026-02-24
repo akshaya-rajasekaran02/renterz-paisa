@@ -30,7 +30,10 @@ public class UnitMapper {
                 .monthlyRent(unit.getMonthlyRent())
                 .status(unit.getStatus())
                 .propertyId(unit.getProperty().getPropertyId())
+                .propertyName(unit.getProperty().getPropertyName())
+                .propertyType(unit.getProperty().getPropertyType().name())
                 .ownerId(unit.getOwner().getUserId())
+                .ownerName(unit.getOwner().getName())
                 .createdAt(unit.getCreatedAt())
                 .updatedAt(unit.getUpdatedAt())
                 .build();

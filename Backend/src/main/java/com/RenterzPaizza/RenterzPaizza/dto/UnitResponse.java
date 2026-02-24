@@ -20,7 +20,10 @@ public class UnitResponse {
     private BigDecimal monthlyRent;
     private UnitStatus status;
     private Long propertyId;
+    private String propertyName;
+    private String propertyType;
     private Long ownerId;
+    private String ownerName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

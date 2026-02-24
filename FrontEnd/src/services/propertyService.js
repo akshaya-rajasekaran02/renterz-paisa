@@ -29,6 +29,26 @@ function toFrontendProperty(item) {
   }
 }
 
+/**
+ * Converts backend unit DTO to frontend unit shape.
+ */
+function toFrontendUnit(item) {
+  return {
+    id: item.unitId,
+    propertyId: item.propertyId,
+    unitNo: item.unitNumber || '',
+    property: item.propertyName || item.property?.propertyName || '',
+    propertyType: item.propertyType || item.property?.propertyType || 'Apartment',
+    owner: item.ownerName || item.owner?.name || item.ownerName || '',
+    ownerProfile: item.owner || { userId: item.ownerId, name: item.ownerName },
+    tenant: '',
+    tenantProfiles: [],
+    floor: item.floor || 1,
+    monthlyRent: item.monthlyRent || 0,
+    status: item.status || 'AVAILABLE',
+  }
+}
+
 export const propertyService = {
   /**
    * Loads properties from backend for admin views.
@@ -94,5 +114,19 @@ export const propertyService = {
    */
   async deleteProperty(id) {
     await api.delete(`/api/admin/properties/${id}`)
+  },
+
+  /**
+   * Fetches all units from backend.
+   */
+  async getAllUnits() {
+    try {
+      const { data } = await api.get('/api/admin/properties/units/all')
+      const content = Array.isArray(data) ? data : data?.content || []
+      return content.map(toFrontendUnit)
+    } catch (error) {
+      if (!useDemoAuth) throw error
+      return inventoryService.getUnits()
+    }
   },
 }

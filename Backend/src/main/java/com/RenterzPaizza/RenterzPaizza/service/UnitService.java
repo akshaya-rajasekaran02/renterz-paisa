@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UnitService {
 
@@ -24,9 +26,9 @@ public class UnitService {
     private final CurrentUserService currentUserService;
 
     public UnitService(UnitRepository unitRepository,
-                       UnitMapper unitMapper,
-                       PropertyService propertyService,
-                       CurrentUserService currentUserService) {
+            UnitMapper unitMapper,
+            PropertyService propertyService,
+            CurrentUserService currentUserService) {
         this.unitRepository = unitRepository;
         this.unitMapper = unitMapper;
         this.propertyService = propertyService;
@@ -88,5 +90,18 @@ public class UnitService {
             throw new ForbiddenException("Owner can only access own units");
         }
         return unit;
+    }
+
+    public List<UnitResponse> getUnitsByProperty(Long propertyId) {
+        Property property = propertyService.getEntity(propertyId);
+        List<Unit> units = unitRepository.findByPropertyPropertyIdAndDeletedFalse(propertyId, Pageable.unpaged())
+                .getContent();
+        return units.stream().map(unitMapper::toResponse).toList();
+    }
+
+    @Transactional
+    public List<UnitResponse> getAllUnits() {
+        List<Unit> units = unitRepository.findByDeletedFalse(Pageable.unpaged()).getContent();
+        return units.stream().map(unitMapper::toResponse).toList();
     }
 }
