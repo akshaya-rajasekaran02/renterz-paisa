@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PaymentService {
@@ -29,12 +30,12 @@ public class PaymentService {
     private final CommunicationService communicationService;
 
     public PaymentService(PaymentRepository paymentRepository,
-                          CurrentUserService currentUserService,
-                          PaymentMapper paymentMapper,
-                          RentRepository rentRepository,
-                          MaintenanceRepository maintenanceRepository,
-                          DamageRepository damageRepository,
-                          CommunicationService communicationService) {
+            CurrentUserService currentUserService,
+            PaymentMapper paymentMapper,
+            RentRepository rentRepository,
+            MaintenanceRepository maintenanceRepository,
+            DamageRepository damageRepository,
+            CommunicationService communicationService) {
         this.paymentRepository = paymentRepository;
         this.currentUserService = currentUserService;
         this.paymentMapper = paymentMapper;
@@ -109,6 +110,20 @@ public class PaymentService {
         User user = currentUserService.getCurrentUser();
         return paymentRepository.findByUserUserIdAndDeletedFalse(user.getUserId(), pageable)
                 .map(paymentMapper::toResponse);
+    }
+
+    @Transactional
+    public Page<PaymentResponse> getAllPayments(Pageable pageable) {
+        return paymentRepository.findByDeletedFalse(pageable)
+                .map(paymentMapper::toResponse);
+    }
+
+    @Transactional
+    public List<PaymentResponse> getAllPaymentsList() {
+        return paymentRepository.findByDeletedFalse()
+                .stream()
+                .map(paymentMapper::toResponse)
+                .toList();
     }
 
     private void ensureAmountMatches(BigDecimal input, BigDecimal expected, String type) {

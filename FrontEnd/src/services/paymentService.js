@@ -88,6 +88,20 @@ export const paymentService = {
   },
 
   /**
+   * Loads all payments from backend (for admin).
+   */
+  async listAllPaymentsRemote() {
+    try {
+      const { data } = await api.get('/api/admin/payments/all')
+      const content = Array.isArray(data) ? data : data?.content || []
+      return content.map(toPaymentItem)
+    } catch (error) {
+      if (!useDemoAuth) throw error
+      return readPayments()
+    }
+  },
+
+  /**
    * Requests a payment gateway checkout session in safe/test mode.
    */
   async initGatewayCheckout(payload) {

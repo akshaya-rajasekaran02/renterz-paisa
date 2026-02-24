@@ -56,13 +56,17 @@ export default function ComplaintPage() {
   } = useForm({ mode: 'onChange', defaultValues: { unitId: '', title: '', description: '' } })
 
   useEffect(() => {
-    if (isAdmin) return
     let cancelled = false
     const load = async () => {
       try {
-        const records = isTenant
-          ? await complaintService.listTenantComplaints()
-          : await complaintService.listOwnerComplaints()
+        let records
+        if (isAdmin) {
+          records = await complaintService.listAdminComplaints()
+        } else {
+          records = isTenant
+            ? await complaintService.listTenantComplaints()
+            : await complaintService.listOwnerComplaints()
+        }
         if (!cancelled) setComplaints(records)
       } catch (error) {
         if (!cancelled) {

@@ -26,7 +26,7 @@ export const complaintService = {
    */
   async listTenantComplaints() {
     try {
-      const { data } = await api.get('/api/tenant/complaints')
+      const { data } = await api.get('/api/tenant/complaints?page=0&size=100')
       const content = Array.isArray(data) ? data : data?.content || []
       return content.map(toComplaintItem)
     } catch (error) {
@@ -53,8 +53,22 @@ export const complaintService = {
    */
   async listOwnerComplaints() {
     try {
-      const { data } = await api.get('/api/owner/complaints')
+      const { data } = await api.get('/api/owner/complaints?page=0&size=100')
       const content = Array.isArray(data) ? data : data?.content || []
+      return content.map(toComplaintItem)
+    } catch (error) {
+      if (!useDemoAuth) throw error
+      return complaintSeed
+    }
+  },
+
+  /**
+   * Fetches all complaints for admin account.
+   */
+  async listAdminComplaints() {
+    try {
+      const { data } = await api.get('/api/admin/complaints/all')
+      const content = Array.isArray(data) ? data : []
       return content.map(toComplaintItem)
     } catch (error) {
       if (!useDemoAuth) throw error

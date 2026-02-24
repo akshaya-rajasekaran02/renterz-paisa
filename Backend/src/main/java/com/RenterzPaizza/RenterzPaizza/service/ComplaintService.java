@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ComplaintService {
 
@@ -24,9 +26,9 @@ public class ComplaintService {
     private final ComplaintMapper complaintMapper;
 
     public ComplaintService(ComplaintRepository complaintRepository,
-                            CurrentUserService currentUserService,
-                            UnitService unitService,
-                            ComplaintMapper complaintMapper) {
+            CurrentUserService currentUserService,
+            UnitService unitService,
+            ComplaintMapper complaintMapper) {
         this.complaintRepository = complaintRepository;
         this.currentUserService = currentUserService;
         this.unitService = unitService;
@@ -59,6 +61,14 @@ public class ComplaintService {
         User owner = currentUserService.getCurrentUser();
         return complaintRepository.findByUnitOwnerUserIdAndDeletedFalse(owner.getUserId(), pageable)
                 .map(complaintMapper::toResponse);
+    }
+
+    @Transactional
+    public List<ComplaintResponse> listAll() {
+        return complaintRepository.findByDeletedFalse()
+                .stream()
+                .map(complaintMapper::toResponse)
+                .toList();
     }
 
     @Transactional

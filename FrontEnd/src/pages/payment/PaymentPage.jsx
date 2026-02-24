@@ -1,3 +1,4 @@
+import { ROLES } from '../../constants/roles'
 import { useEffect, useMemo, useState } from 'react'
 import Button from '../../components/ui/Button'
 import Card from '../../components/ui/Card'
@@ -11,6 +12,18 @@ import { useToast } from '../../hooks/useToast'
 import { paymentService } from '../../services/paymentService'
 import { formatCurrency, formatDate } from '../../utils/formatters'
 
+// Hardcoded dummy payment data for demo
+const DUMMY_PAYMENTS = [
+  { id: 1, tenant: 'John Doe', amount: 15000, date: '2024-01-15', status: 'SUCCESS', method: 'UPI' },
+  { id: 2, tenant: 'Jane Smith', amount: 12000, date: '2024-01-16', status: 'SUCCESS', method: 'Bank Transfer' },
+  { id: 3, tenant: 'Bob Wilson', amount: 18000, date: '2024-01-17', status: 'PENDING', method: 'Cheque' },
+  { id: 4, tenant: 'Alice Brown', amount: 10000, date: '2024-01-18', status: 'SUCCESS', method: 'UPI' },
+  { id: 5, tenant: 'Charlie Davis', amount: 20000, date: '2024-01-19', status: 'FAILED', method: 'Bank Transfer' },
+  { id: 6, tenant: 'Eva Martinez', amount: 13500, date: '2024-01-20', status: 'SUCCESS', method: 'UPI' },
+  { id: 7, tenant: 'Frank Miller', amount: 16000, date: '2024-01-21', status: 'SUCCESS', method: 'Cash' },
+  { id: 8, tenant: 'Grace Lee', amount: 11000, date: '2024-01-22', status: 'PENDING', method: 'UPI' },
+]
+
 export default function PaymentPage() {
   const loading = usePageLoading(350)
   const { user } = useAuth()
@@ -21,26 +34,9 @@ export default function PaymentPage() {
   const [selected, setSelected] = useState(null)
 
   useEffect(() => {
-    let cancelled = false
-    const load = async () => {
-      try {
-        const records = await paymentService.listPaymentsRemote()
-        if (!cancelled) {
-          setPayments(records)
-        }
-      } catch {
-        if (!cancelled) {
-          const local = paymentService.listPaymentsForUser(user)
-          setPayments(local)
-          showToast('Showing local payment data because backend fetch failed.', 'info')
-        }
-      }
-    }
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [showToast, user])
+    // Use hardcoded dummy data for now
+    setPayments(DUMMY_PAYMENTS)
+  }, [])
 
   const filtered = useMemo(
     () => payments.filter((item) => {
@@ -106,8 +102,8 @@ export default function PaymentPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-        <h2 className="text-2xl font-bold">Payments</h2>
-        <p className="text-sm text-soft">Transaction monitoring with receipt download support.</p>
+          <h2 className="text-2xl font-bold">Payments</h2>
+          <p className="text-sm text-soft">Transaction monitoring with receipt download support.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
           <span className="rounded-full bg-slate-100 px-2.5 py-1 text-slate-700">Total: {statusSummary.total}</span>

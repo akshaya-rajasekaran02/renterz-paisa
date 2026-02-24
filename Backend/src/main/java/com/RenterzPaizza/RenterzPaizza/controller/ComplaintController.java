@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class ComplaintController {
 
@@ -38,9 +40,15 @@ public class ComplaintController {
         return ApiResponse.ok("Complaints fetched", PageMapper.toPageResponse(page));
     }
 
+    @GetMapping("/api/admin/complaints/all")
+    public ApiResponse<List<ComplaintResponse>> adminList() {
+        List<ComplaintResponse> list = complaintService.listAll();
+        return ApiResponse.ok("All complaints fetched", list);
+    }
+
     @PutMapping("/api/owner/complaints/{id}/status")
     public ApiResponse<ComplaintResponse> updateStatus(@PathVariable Long id,
-                                                       @RequestParam WorkFlowStatus status) {
+            @RequestParam WorkFlowStatus status) {
         return ApiResponse.ok("Complaint status updated", complaintService.updateStatus(id, status));
     }
 }

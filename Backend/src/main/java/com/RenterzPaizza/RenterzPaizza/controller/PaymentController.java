@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class PaymentController {
 
@@ -21,7 +23,7 @@ public class PaymentController {
     private final PaymentGatewayService paymentGatewayService;
 
     public PaymentController(PaymentService paymentService,
-                             PaymentGatewayService paymentGatewayService) {
+            PaymentGatewayService paymentGatewayService) {
         this.paymentService = paymentService;
         this.paymentGatewayService = paymentGatewayService;
     }
@@ -35,6 +37,18 @@ public class PaymentController {
     public ApiResponse<PageResponse<PaymentResponse>> myPayments(Pageable pageable) {
         Page<PaymentResponse> page = paymentService.myPayments(pageable);
         return ApiResponse.ok("Payments fetched", PageMapper.toPageResponse(page));
+    }
+
+    @GetMapping("/api/admin/payments/all")
+    public ApiResponse<PageResponse<PaymentResponse>> getAllPayments(Pageable pageable) {
+        Page<PaymentResponse> page = paymentService.getAllPayments(pageable);
+        return ApiResponse.ok("All payments fetched", PageMapper.toPageResponse(page));
+    }
+
+    @GetMapping("/api/admin/payments/all/list")
+    public ApiResponse<List<PaymentResponse>> getAllPaymentsList() {
+        List<PaymentResponse> list = paymentService.getAllPaymentsList();
+        return ApiResponse.ok("All payments fetched", list);
     }
 
     @PostMapping("/api/common/payments/gateway/init")
