@@ -1,0 +1,102 @@
+# 🏠 Renterz Paizza
+### Smart Rent Tracking & Payment Management System
+
+> **“No more rent confusion. No more missed dues. Just smooth living.”**
+
+Renterz Paizza is a **full-stack, microservice-ready Rent & Property Management System** designed to help landlords, tenants, and admins **track rent, maintenance, complaints, damages, and payments** — all in one place.
+
+---
+
+## 🚀 Why Renterz Paizza?
+
+Managing rental properties is messy:
+- Missed rent payments
+- Manual reminders
+- No damage proof
+- Scattered complaints
+- Zero automation
+
+👉 **Renterz Paizza solves this with automation + clarity.**
+
+---
+
+## ✨ Key Features
+
+### 🏢 Property & Unit Management
+- Manage multiple properties
+- Allocate units to tenants or owners
+- Track occupancy status in real time
+
+### 👤 User Roles
+- **Admin** – Full control
+- **Owner** – Pays maintenance only
+- **Tenant** – Pays rent + maintenance
+
+(Role-based access implemented using Spring Security)
+
+---
+
+### 💰 Rent & Maintenance Tracking
+- Automatic due calculation
+- Owner → Maintenance only
+- Tenant → Rent + Maintenance
+- Overdue detection
+
+---
+
+### 🔔 Smart Communication Engine
+Automated notifications via:
+- 📩 Email
+- 📱 SMS
+- 📞 Voice Call
+- 💬 WhatsApp *(future ready)*
+
+Templates are stored in a **Communication table** for reusability.
+
+---
+
+### 🛠️ Complaint Management
+- Raise complaints per unit
+- Track complaint status
+- Admin resolution workflow
+
+---
+
+### 🧱 Damage Tracking (Power Feature 💥)
+- Upload **move-in image**
+- Upload **move-out image**
+- Compare damages
+- Auto-calculate damage cost
+- Assign cost to user for payment
+
+---
+
+### 💳 Payment Gateway Integration
+- Centralized payment table
+- Supports rent, maintenance, damage payments
+- Gateway-ready (Razorpay / Stripe / PayU)
+- Payment status tracking
+
+---
+
+## 🧩 System Architecture
+
+
+## Environment Configuration
+Use environment variables for secrets and runtime config.
+
+Required keys:
+- `DB_URL`
+- `DB_USERNAME`
+- `DB_PASSWORD`
+- `JWT_SECRET`
+
+Optional keys:
+- `JWT_EXPIRATION_MS` (default `86400000`)
+- `TWILIO_ACCOUNT_SID`
+- `TWILIO_AUTH_TOKEN`
+- `TWILIO_PHONE_NUMBER`
+- `TWILIO_WHATSAPP_NUMBER` (optional, defaults to `TWILIO_PHONE_NUMBER`)
+- `APP_PUBLIC_BASE_URL` (required for Twilio status callbacks, e.g. `https://<public-host>`)
+
+A template is available in `.env.example`.
