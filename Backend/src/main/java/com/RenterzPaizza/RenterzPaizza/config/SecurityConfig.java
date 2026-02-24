@@ -25,7 +25,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> {})
+                .cors(cors -> {
+                })
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
@@ -34,10 +35,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/owner/**").hasRole("OWNER")
                         .requestMatchers("/api/tenant/**").hasRole("TENANT")
-                        .requestMatchers(HttpMethod.GET, "/api/common/**").hasAnyRole("ADMIN", "OWNER", "TENANT")
-                        .requestMatchers(HttpMethod.POST, "/api/common/**").hasAnyRole("ADMIN", "OWNER", "TENANT")
-                        .anyRequest().authenticated()
-                )
+                        .requestMatchers(HttpMethod.GET, "/api/common/**")
+                        .hasAnyRole("SUPER_ADMIN", "ADMIN", "OWNER", "TENANT")
+                        .requestMatchers(HttpMethod.POST, "/api/common/**")
+                        .hasAnyRole("SUPER_ADMIN", "ADMIN", "OWNER", "TENANT")
+                        .requestMatchers(HttpMethod.PUT, "/api/common/**")
+                        .hasAnyRole("SUPER_ADMIN", "ADMIN", "OWNER", "TENANT")
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
